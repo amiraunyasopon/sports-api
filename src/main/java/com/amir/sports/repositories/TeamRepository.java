@@ -1,4 +1,4 @@
-package repositories;
+package com.amir.sports.repositories;
 
 import com.amir.sports.domain.entities.TeamEntity;
 import org.springframework.data.repository.CrudRepository;
