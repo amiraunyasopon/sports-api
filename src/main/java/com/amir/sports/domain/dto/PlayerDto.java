@@ -1,6 +1,5 @@
 package com.amir.sports.domain.dto;
 
-import com.amir.sports.domain.entities.TeamEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +14,5 @@ public class PlayerDto {
 
     private String name;
 
-    private TeamEntity teamEntity;
+    private TeamDto team;
 }
