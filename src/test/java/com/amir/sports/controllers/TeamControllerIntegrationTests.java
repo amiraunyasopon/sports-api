@@ -92,4 +92,40 @@ public class TeamControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.content[0].winLossRatio").value(0.54)
         );
     }
+
+    @Test
+    public void testThatGetTeamsReturnsHttpStatus200WhenTeamExists() throws Exception {
+        TeamEntity testTeamEntityA = TestDataUtil.createTestTeamEntityA();
+        teamService.save(testTeamEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/teams/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testThatGetTeamsReturnsHttpStatus404WhenNoTeamExists() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/teams/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void testThatGetTeamsReturnsTeamWhenTeamExists() throws Exception {
+        TeamEntity testTeamEntityA = TestDataUtil.createTestTeamEntityA();
+        teamService.save(testTeamEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/teams/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(1)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("Thailand Tigers")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.winLossRatio").value(0.54)
+        );
+    }
 }

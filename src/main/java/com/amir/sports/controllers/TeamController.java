@@ -8,10 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 public class TeamController {
@@ -39,5 +38,15 @@ public class TeamController {
     {
         Page<TeamEntity> teams = teamService.findAll(pageable);
         return teams.map(teamMapper::mapTo);
+    }
+
+    @GetMapping(path = "/teams/{id}")
+    public ResponseEntity<TeamDto> getTeam(@PathVariable("id") Long id)
+    {
+        Optional<TeamEntity> foundTeam = teamService.findOne(id);
+        return foundTeam.map(teamEntity -> {
+            TeamDto teamDto = teamMapper.mapTo(teamEntity);
+            return new ResponseEntity<>(teamDto, HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }
