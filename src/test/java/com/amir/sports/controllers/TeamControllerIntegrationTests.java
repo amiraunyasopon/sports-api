@@ -176,4 +176,42 @@ public class TeamControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.winLossRatio").value(teamDto.getWinLossRatio())
         );
     }
+
+    @Test
+    public void testThatPartialUpdateExistingTeamReturnsHttpStatus200Ok() throws Exception{
+        TeamEntity testTeamEntityA = TestDataUtil.createTestTeamEntityA();
+        TeamEntity savedTeam = teamService.save(testTeamEntityA);
+
+        TeamDto testTeamDtoA = TestDataUtil.createTestTeamDtoA();
+        testTeamDtoA.setName("UPDATED");
+        String teamDtoJson = objectMapper.writeValueAsString(testTeamDtoA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch("/teams/" + savedTeam.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(teamDtoJson)
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testThatPartialUpdateExistingTeamReturnsUpdatedTeam() throws Exception{
+        TeamEntity testTeamEntityA = TestDataUtil.createTestTeamEntityA();
+        TeamEntity savedTeam = teamService.save(testTeamEntityA);
+
+        TeamDto testTeamDtoA = TestDataUtil.createTestTeamDtoA();
+        testTeamDtoA.setName("UPDATED");
+        String teamDtoJson = objectMapper.writeValueAsString(testTeamDtoA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch("/teams/" + savedTeam.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(teamDtoJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(savedTeam.getId())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.winLossRatio").value(testTeamDtoA.getWinLossRatio())
+        );
+    }
 }

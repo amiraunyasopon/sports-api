@@ -65,5 +65,17 @@ public class TeamController {
                 HttpStatus.OK
         );
     }
-    
+
+    @PatchMapping(path = "/teams/{id}")
+    public ResponseEntity<TeamDto> partialUpdate(@PathVariable("id") Long id, @RequestBody TeamDto teamDto) {
+        if(!teamService.isExists(id)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        TeamEntity teamEntity = teamMapper.mapFrom(teamDto);
+        TeamEntity savedTeamEntity = teamService.partialUpdate(id, teamEntity);
+        return new ResponseEntity<>(
+                teamMapper.mapTo(savedTeamEntity),
+                HttpStatus.OK
+        );
+    }
 }
