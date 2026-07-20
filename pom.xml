@@ -37,7 +37,10 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+		</dependency>
 		<!-- Spring Boot Starter Test (covers mockMvc, junit, etc.) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
