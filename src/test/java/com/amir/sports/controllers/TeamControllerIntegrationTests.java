@@ -40,13 +40,56 @@ public class TeamControllerIntegrationTests {
     public void testThatCreateTeamSuccessfullyReturnsHttp201Created() throws Exception{
         TeamEntity testTeamA = TestDataUtil.createTestTeamEntityA();
         testTeamA.setId(null);
-        String authorJson = objectMapper.writeValueAsString(testTeamA);
+        String teamJson = objectMapper.writeValueAsString(testTeamA);
         mockMvc.perform(
                 MockMvcRequestBuilders.post("/teams")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(authorJson)
+                        .content(teamJson)
         ).andExpect(
                 MockMvcResultMatchers.status().isCreated()
+        );
+    }
+
+    @Test
+    public void testThatCreateTeamSuccessfullyReturnsSavedTeam() throws Exception{
+        TeamEntity testTeamA = TestDataUtil.createTestTeamEntityA();
+        testTeamA.setId(null);
+        String teamJson = objectMapper.writeValueAsString(testTeamA);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/teams")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(teamJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("Thailand Tigers")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.winLossRatio").value(0.54)
+        );
+    }
+
+    @Test
+    public void testThatListTeamsReturnsHttpStatus200() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/teams")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testThatListTeamsReturnsListOfTeams() throws Exception {
+        TeamEntity testTeamEntityA = TestDataUtil.createTestTeamEntityA();
+        teamService.save(testTeamEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/teams")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].id").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].name").value("Thailand Tigers")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].winLossRatio").value(0.54)
         );
     }
 }
