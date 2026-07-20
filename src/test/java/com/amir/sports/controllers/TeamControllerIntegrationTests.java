@@ -1,6 +1,7 @@
 package com.amir.sports.controllers;
 
 import com.amir.sports.TestDataUtil;
+import com.amir.sports.domain.dto.TeamDto;
 import com.amir.sports.domain.entities.TeamEntity;
 import com.amir.sports.services.TeamService;
 import org.junit.jupiter.api.Test;
@@ -126,6 +127,53 @@ public class TeamControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.name").value("Thailand Tigers")
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.winLossRatio").value(0.54)
+        );
+    }
+
+    @Test
+    public void testThatFullUpdateTeamReturnsHttpStatus420WhenNoTeamExists() throws Exception {
+        TeamDto testTeamDtoA = TestDataUtil.createTestTeamDtoA();
+        String TeamDtoJson = objectMapper.writeValueAsString(testTeamDtoA);
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/teams/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TeamDtoJson)
+        ).andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void testThatFullUpdateTeamReturnsHttpStatus200WhenTeamExists() throws Exception {
+        TeamEntity testTeamEntityA = TestDataUtil.createTestTeamEntityA();
+        TeamEntity savedTeam = teamService.save(testTeamEntityA);
+
+        TeamDto testTeamDtoA = TestDataUtil.createTestTeamDtoA();
+        String teamDtoJson = objectMapper.writeValueAsString(testTeamDtoA);
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/teams/" + savedTeam.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(teamDtoJson)
+        ).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testThatFullUpdateUpdatesExistingTeam() throws Exception {
+        TeamEntity testTeamEntityA = TestDataUtil.createTestTeamEntityA();
+        TeamEntity savedTeam = teamService.save(testTeamEntityA);
+
+        TeamEntity teamDto = TestDataUtil.createTestTeamEntityB();
+        teamDto.setId(savedTeam.getId());
+
+        String teamDtoUpdateJson = objectMapper.writeValueAsString(teamDto);
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/teams/" + savedTeam.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(teamDtoUpdateJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(savedTeam.getId())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value(teamDto.getName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.winLossRatio").value(teamDto.getWinLossRatio())
         );
     }
 }
