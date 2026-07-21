@@ -63,4 +63,10 @@ public class PlayerController {
         PlayerEntity updatedPlayerEntity = playerService.partialUpdate(id, playerEntity);
         return new ResponseEntity<>(playerMapper.mapTo(updatedPlayerEntity), HttpStatus.OK);
     }
+
+    @DeleteMapping(path = "/players/{id}")
+    public ResponseEntity<PlayerDto> deleteBook(@PathVariable("id") Long id) {
+        playerService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
+    }
 }

@@ -205,4 +205,23 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
         );
     }
+
+    @Test
+    public void testThatDeletePlayerReturnsHttpStatus204ForNonExistingPlayer() throws Exception{
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/players/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    public void testThatDeletePlayerReturnsHttpStatus204ForExistingPlayer() throws Exception{
+        PlayerEntity testPlayerEntityA = TestDataUtil.createTestPlayerEntityA(null);
+        playerService.createUpdatePlayer(testPlayerEntityA.getId(), testPlayerEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/players/" + testPlayerEntityA.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
 }
