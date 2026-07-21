@@ -214,4 +214,23 @@ public class TeamControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.winLossRatio").value(testTeamDtoA.getWinLossRatio())
         );
     }
+
+    @Test
+    public void testThatDeleteTeamReturnsHttpStatus204ForNonExistingTeam() throws Exception{
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/teams/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    public void testThatDeleteTeamReturnsHttpStatus204ForExistingTeam() throws Exception {
+        TeamEntity testTeamEntityA = TestDataUtil.createTestTeamEntityA();
+        TeamEntity savedTeam = teamService.save(testTeamEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/teams/" + savedTeam.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
 }

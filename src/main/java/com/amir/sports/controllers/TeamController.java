@@ -78,4 +78,10 @@ public class TeamController {
                 HttpStatus.OK
         );
     }
+
+    @DeleteMapping(path = "/teams/{id}")
+    public ResponseEntity<TeamDto> deleteAuthor(@PathVariable("id") Long id) {
+        teamService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
+    }
 }
