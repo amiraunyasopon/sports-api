@@ -15,6 +15,12 @@ public class PlayerServiceImpl implements PlayerService {
     public PlayerServiceImpl(PlayerRepository playerRepository) {this.playerRepository = playerRepository;}
 
     @Override
+    public PlayerEntity createUpdatePlayer(Long id, PlayerEntity playerEntity) {
+        playerEntity.setId(id);
+        return playerRepository.save(playerEntity);
+    }
+
+    @Override
     public PlayerEntity save(PlayerEntity playerEntity) {
         return playerRepository.save(playerEntity);
     }

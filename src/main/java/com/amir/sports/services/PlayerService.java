@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface PlayerService {
     PlayerEntity save(PlayerEntity playerEntity);
 
+    PlayerEntity createUpdatePlayer(Long id, PlayerEntity playerEntity);
+
     Page<PlayerEntity> findAll(Pageable pageable);
 
     Optional<PlayerEntity> findOne(Long id);
