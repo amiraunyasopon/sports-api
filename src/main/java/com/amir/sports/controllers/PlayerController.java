@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 public class PlayerController {
 
@@ -42,4 +44,12 @@ public class PlayerController {
         return players.map(playerMapper::mapTo);
     }
 
+    @GetMapping(path = "/players/{id}")
+    public ResponseEntity<PlayerDto> getBook(@PathVariable("id") Long id) {
+        Optional<PlayerEntity> foundBook = playerService.findOne(id);
+        return foundBook.map(bookEntity -> {
+            PlayerDto bookDto = playerMapper.mapTo(bookEntity);
+            return new ResponseEntity<>(bookDto, HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 }

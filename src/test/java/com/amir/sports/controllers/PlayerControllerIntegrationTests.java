@@ -129,4 +129,42 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.content[0].name").value("Yi Sols")
         );
     }
+
+    @Test
+    public void testThatGetPlayerReturnsHttpStatus200OkWhenPlayerExists() throws Exception {
+        PlayerEntity testPlayerEntityA = TestDataUtil.createTestPlayerEntityA(null);
+        playerService.createUpdatePlayer(testPlayerEntityA.getId(), testPlayerEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/players/" + testPlayerEntityA.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatGetPlayerReturnsHttpStatus404WhenNoPlayerExists() throws Exception {
+        PlayerEntity testPlayerEntityA = TestDataUtil.createTestPlayerEntityA(null);
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/players/" + testPlayerEntityA.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        );
+    }
+
+    @Test
+    public void testThatGetPlayerReturnsPlayerWhenPlayerExists() throws Exception {
+        PlayerEntity testPlayerEntityA = TestDataUtil.createTestPlayerEntityA(null);
+        playerService.createUpdatePlayer(testPlayerEntityA.getId(), testPlayerEntityA);
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/players/" + testPlayerEntityA.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(4700L)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("Yi Sols")
+        );
+    }
 }
