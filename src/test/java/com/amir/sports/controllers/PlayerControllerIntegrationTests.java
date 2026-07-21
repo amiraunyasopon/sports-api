@@ -66,4 +66,42 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.status().isOk()
         );
     }
+
+    @Test
+    public void testThatCreatePlayerReturnsCreatedPlayer() throws Exception {
+        PlayerDto playerDto = TestDataUtil.createTestPlayerDtoA(null);
+        String createPlayerJson = objectMapper.writeValueAsString(playerDto);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/players/" + playerDto.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createPlayerJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(4700L)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("Yi Sols")
+        );
+    }
+
+    @Test
+    public void testThatUpdatePlayerReturnsUpdatedPlayer() throws Exception {
+        //save player in database
+        PlayerEntity testPlayerEntityA = TestDataUtil.createTestPlayerEntityA(null);
+        PlayerEntity savedPlayerEntity = playerService.createUpdatePlayer(testPlayerEntityA.getId(), testPlayerEntityA);
+        //run update
+        PlayerDto testPlayerDtoA = TestDataUtil.createTestPlayerDtoA(null);
+        testPlayerDtoA.setName("UPDATED");
+        testPlayerDtoA.setId(savedPlayerEntity.getId());
+        String createPlayerJson = objectMapper.writeValueAsString(testPlayerDtoA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/players/" + savedPlayerEntity.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createPlayerJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(4700L)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
+        );
+    }
 }
