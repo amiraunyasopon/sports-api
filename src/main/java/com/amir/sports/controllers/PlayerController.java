@@ -39,8 +39,13 @@ public class PlayerController {
     }
 
     @GetMapping(path = "/players")
-    public Page<PlayerDto> listPlayers(Pageable pageable) {
-        Page<PlayerEntity> players = playerService.findAll(pageable);
+    public Page<PlayerDto> listPlayers(
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "position", required = false) String position,
+            @RequestParam(name = "teamName", required = false) String teamName,
+            Pageable pageable
+    ) {
+        Page<PlayerEntity> players = playerService.search(name, position, teamName, pageable);
         return players.map(playerMapper::mapTo);
     }
 

@@ -44,6 +44,7 @@ public final class TestDataUtil {
         return PlayerEntity.builder()
                 .id(4700L)
                 .name("Yi Sols")
+                .position("Midfielder")
                 .teamEntity(teamEntity)
                 .build();
     }
@@ -53,6 +54,7 @@ public final class TestDataUtil {
         return PlayerDto.builder()
                 .id(4700L)
                 .name("Yi Sols")
+                .position("Midfielder")
                 .team(teamDto)
                 .build();
     }
@@ -62,6 +64,7 @@ public final class TestDataUtil {
         return PlayerEntity.builder()
                 .id(3598L)
                 .name("Flynn")
+                .position("Defender")
                 .teamEntity(teamEntity)
                 .build();
     }
@@ -71,6 +74,7 @@ public final class TestDataUtil {
         return PlayerEntity.builder()
                 .id(1998L)
                 .name("Chase")
+                .position("Forward")
                 .teamEntity(teamEntity)
                 .build();
     }

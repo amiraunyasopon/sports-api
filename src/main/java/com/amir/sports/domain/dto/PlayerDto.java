@@ -14,5 +14,7 @@ public class PlayerDto {
 
     private String name;
 
+    private String position;
+
     private TeamDto team;
 }

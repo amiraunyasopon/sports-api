@@ -3,6 +3,7 @@ package com.amir.sports.controllers;
 import com.amir.sports.TestDataUtil;
 import com.amir.sports.domain.dto.PlayerDto;
 import com.amir.sports.domain.entities.PlayerEntity;
+import com.amir.sports.domain.entities.TeamEntity;
 import com.amir.sports.services.PlayerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,6 +81,8 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.id").value(4700L)
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.name").value("Yi Sols")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.position").value("Midfielder")
         );
     }
 
@@ -102,6 +105,8 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.id").value(4700L)
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.position").value("Midfielder")
         );
     }
 
@@ -127,6 +132,8 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.content[0].id").value(4700L)
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.content[0].name").value("Yi Sols")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].position").value("Midfielder")
         );
     }
 
@@ -165,6 +172,8 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.id").value(4700L)
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.name").value("Yi Sols")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.position").value("Midfielder")
         );
     }
 
@@ -175,6 +184,7 @@ public class PlayerControllerIntegrationTests {
 
         PlayerDto testPlayerDtoA = TestDataUtil.createTestPlayerDtoA(null);
         testPlayerDtoA.setName("UPDATED");
+        testPlayerDtoA.setPosition("Goalkeeper");
         String playerJson = objectMapper.writeValueAsString(testPlayerDtoA);
 
         mockMvc.perform(
@@ -193,6 +203,7 @@ public class PlayerControllerIntegrationTests {
 
         PlayerDto testPlayerDtoA = TestDataUtil.createTestPlayerDtoA(null);
         testPlayerDtoA.setName("UPDATED");
+        testPlayerDtoA.setPosition("Goalkeeper");
         String playerJson = objectMapper.writeValueAsString(testPlayerDtoA);
 
         mockMvc.perform(
@@ -203,6 +214,75 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.id").value(testPlayerEntityA.getId())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.position").value("Goalkeeper")
+        );
+    }
+
+    @Test
+    public void testThatListPlayersCanFilterByPosition() throws Exception {
+        TeamEntity teamEntity = TestDataUtil.createTestTeamEntityA();
+        PlayerEntity playerEntityA = TestDataUtil.createTestPlayerEntityA(teamEntity);
+        PlayerEntity playerEntityB = TestDataUtil.createTestPlayerEntityB(teamEntity);
+        playerService.createUpdatePlayer(playerEntityA.getId(), playerEntityA);
+        playerService.createUpdatePlayer(playerEntityB.getId(), playerEntityB);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/players?position=def")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.length()").value(1)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].name").value("Flynn")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].position").value("Defender")
+        );
+    }
+
+    @Test
+    public void testThatListPlayersCanFilterByNamePositionAndTeamName() throws Exception {
+        TeamEntity targetTeam = TestDataUtil.createTestTeamEntityA();
+        TeamEntity otherTeam = TestDataUtil.createTestTeamEntityB();
+
+        PlayerEntity targetPlayer = TestDataUtil.createTestPlayerEntityA(targetTeam);
+        PlayerEntity otherPlayer = TestDataUtil.createTestPlayerEntityB(otherTeam);
+
+        playerService.createUpdatePlayer(targetPlayer.getId(), targetPlayer);
+        playerService.createUpdatePlayer(otherPlayer.getId(), otherPlayer);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/players?name=yi&position=mid&teamName=tiger")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.length()").value(1)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].id").value(4700L)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].name").value("Yi Sols")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].position").value("Midfielder")
+        );
+    }
+
+    @Test
+    public void testThatListPlayersWithoutSearchParamsRemainsBackwardCompatible() throws Exception {
+        TeamEntity teamEntity = TestDataUtil.createTestTeamEntityA();
+        PlayerEntity playerEntityA = TestDataUtil.createTestPlayerEntityA(teamEntity);
+        PlayerEntity playerEntityB = TestDataUtil.createTestPlayerEntityB(teamEntity);
+        playerService.createUpdatePlayer(playerEntityA.getId(), playerEntityA);
+        playerService.createUpdatePlayer(playerEntityB.getId(), playerEntityB);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/players")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content.length()").value(2)
         );
     }
 

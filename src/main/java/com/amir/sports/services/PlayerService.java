@@ -12,6 +12,8 @@ public interface PlayerService {
 
     Page<PlayerEntity> findAll(Pageable pageable);
 
+    Page<PlayerEntity> search(String name, String position, String teamName, Pageable pageable);
+
     Optional<PlayerEntity> findOne(Long id);
 
     boolean isExists(Long id);

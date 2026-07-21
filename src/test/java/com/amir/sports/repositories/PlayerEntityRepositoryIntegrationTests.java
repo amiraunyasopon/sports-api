@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -69,6 +72,28 @@ public class PlayerEntityRepositoryIntegrationTests {
         assertThat(result).isPresent();
         assertThat(result.get()).isEqualTo(playerEntityA);
 
+    }
+
+    @Test
+    public void testThatPlayerCanBeSearchedByPositionAndTeamName() {
+        TeamEntity teamEntityA = TestDataUtil.createTestTeamEntityA();
+        TeamEntity teamEntityB = TestDataUtil.createTestTeamEntityB();
+
+        PlayerEntity playerEntityA = TestDataUtil.createTestPlayerEntityA(teamEntityA);
+        PlayerEntity playerEntityB = TestDataUtil.createTestPlayerEntityB(teamEntityB);
+        underTest.save(playerEntityA);
+        underTest.save(playerEntityB);
+
+        Specification<PlayerEntity> spec = (root, query, criteriaBuilder) ->
+                criteriaBuilder.and(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("position")), "%mid%"),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("teamEntity").get("name")), "%tiger%")
+                );
+        Page<PlayerEntity> result = underTest.findAll(spec, PageRequest.of(0, 10));
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().getFirst().getName()).isEqualTo("Yi Sols");
+        assertThat(result.getContent().getFirst().getPosition()).isEqualTo("Midfielder");
     }
 
     @Test

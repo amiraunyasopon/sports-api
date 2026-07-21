@@ -19,6 +19,8 @@ public class PlayerEntity {
 
     private String name;
 
+    private String position;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "player_id")
     private TeamEntity teamEntity;
