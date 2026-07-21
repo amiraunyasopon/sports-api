@@ -167,4 +167,42 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.name").value("Yi Sols")
         );
     }
+
+    @Test
+    public void testThatPartialUpdatePlayerReturnsHttpStatus200Ok() throws  Exception {
+        PlayerEntity testPlayerEntityA = TestDataUtil.createTestPlayerEntityA(null);
+        playerService.createUpdatePlayer(testPlayerEntityA.getId(), testPlayerEntityA);
+
+        PlayerDto testPlayerDtoA = TestDataUtil.createTestPlayerDtoA(null);
+        testPlayerDtoA.setName("UPDATED");
+        String playerJson = objectMapper.writeValueAsString(testPlayerDtoA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch("/players/" + testPlayerEntityA.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(playerJson)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatPartialUpdatePlayerReturnsUpdatedPlayer() throws  Exception {
+        PlayerEntity testPlayerEntityA = TestDataUtil.createTestPlayerEntityA(null);
+        playerService.createUpdatePlayer(testPlayerEntityA.getId(), testPlayerEntityA);
+
+        PlayerDto testPlayerDtoA = TestDataUtil.createTestPlayerDtoA(null);
+        testPlayerDtoA.setName("UPDATED");
+        String playerJson = objectMapper.writeValueAsString(testPlayerDtoA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch("/players/" + testPlayerEntityA.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(playerJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(testPlayerEntityA.getId())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
+        );
+    }
 }
