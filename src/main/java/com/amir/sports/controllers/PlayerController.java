@@ -4,12 +4,11 @@ import com.amir.sports.domain.dto.PlayerDto;
 import com.amir.sports.domain.entities.PlayerEntity;
 import com.amir.sports.mappers.Mapper;
 import com.amir.sports.services.PlayerService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class PlayerController {
@@ -36,4 +35,11 @@ public class PlayerController {
             return new ResponseEntity<>(savedPlayerDto, HttpStatus.CREATED);
         }
     }
+
+    @GetMapping(path = "/players")
+    public Page<PlayerDto> listPlayers(Pageable pageable) {
+        Page<PlayerEntity> players = playerService.findAll(pageable);
+        return players.map(playerMapper::mapTo);
+    }
+
 }

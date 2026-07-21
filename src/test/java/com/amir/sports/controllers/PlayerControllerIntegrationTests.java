@@ -104,4 +104,29 @@ public class PlayerControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
         );
     }
+
+    @Test
+    public void testThatListPlayersReturnsHttpStatus200Ok() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/players")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatListPlayersReturnsListOfPlayers() throws Exception {
+        PlayerEntity testPlayerEntityA = TestDataUtil.createTestPlayerEntityA(null);
+        playerService.createUpdatePlayer(testPlayerEntityA.getId(), testPlayerEntityA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/players")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].id").value(4700L)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.content[0].name").value("Yi Sols")
+        );
+    }
 }
